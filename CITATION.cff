@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "Conformal safe-entry forecasting for toxic gas in manholes"
+authors:
+  - family-names: Boruah
+    given-names: Irene
+    orcid: "https://orcid.org/0009-0000-2094-8251"
+    affiliation: "Dibrugarh University Institute of Engineering and Technology"
+version: 0.1.0
+date-released: 2026-10-07
+license: MIT
+repository-code: "https://github.com/ireneboruah2004/manhole-safe-entry-cp"
+keywords:
+  - conformal prediction
+  - confined space safety
+  - hydrogen sulfide
+  - adaptive conformal inference
+  - robotics
