@@ -14,6 +14,11 @@ decision with a statistical guarantee:
 If the bound holds with probability at least 1 − α, then the robot says "safe" while the gas
 actually exceeds the limit at most α of the time.
 
+**Exposure limit:** 10 ppm, the NIOSH Recommended Exposure Limit for H₂S, which is a 10-minute
+ceiling ([OSHA hydrogen sulfide standards page](https://www.osha.gov/hydrogen-sulfide/standards)).
+A ceiling fits this study because the decision bounds the *maximum* concentration over the next
+H minutes. A stricter 5 ppm limit (ACGIH STEL) is reported as a sensitivity check below.
+
 **Status:** simulation study. No real gas or hardware was used.
 
 ## Main result
@@ -44,6 +49,22 @@ Findings:
    in advance.
 
 ![Trade-off between missed danger and usefulness](results/seeds_plot.png)
+
+### Sensitivity: stricter 5 ppm limit (ACGIH STEL)
+
+Same data and forecasts, only the decision threshold changes. Shift split, mean ± std over 3 seeds.
+
+| Horizon | Split conformal: missed | ACI: missed / usable | Burst-aware + quantile tracking: missed / usable |
+|---|---|---|---|
+| 5 min  | 4.8%  | 1.2% / 31% | 1.6% / 46% |
+| 10 min | 8.7%  | 1.9% / 22% | 2.1% / 26% |
+| 20 min | 13.7% | 1.2% / 17% | 1.8% / 15% |
+
+At 5 ppm the safety ranking holds (split conformal still fails), but the usefulness advantage
+over ACI mostly disappears beyond 5 minutes: with a tighter limit, almost any bound that accounts
+for bursts says "unsafe" most of the time. Usefulness gains depend on the limit used.
+
+To reproduce: `$env:H2S_LIMIT_PPM = "5"` in PowerShell, then rerun the scripts.
 
 ## How it works
 
@@ -76,8 +97,9 @@ Small differences (a few tenths of a percent) between machines come from library
 
 - **Synthetic data.** Physical parameters (mixing, ventilation, release rates) are plausible
   ranges, not measured values. The simulator is 1-D; real manholes are 3-D.
-- **The exposure limit of 10 ppm is a placeholder.** Replace `EXPOSURE_LIMIT_PPM` in
-  `manhole_sim.py` with a value from a cited occupational standard before using any result.
+- The 10 ppm limit is a US NIOSH recommendation. Indian law (Factories Act, Second Schedule)
+  sets 10 ppm as an 8-hour average and 15 ppm as a 15-minute short-term limit, which are not
+  ceilings; a ceiling is used here because it is the conservative choice for a peak-based decision.
 - The forecaster is trained and tested on the same simulator family.
 - The window-level guarantee is approximate, because windows within one manhole are correlated.
   The trajectory-level variant in `conformal.py` gives a guarantee over whole scenarios.
